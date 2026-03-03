@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bridge — Business Case | Nike</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:          #0c1524;
+      --navy-light:    #162033;
+      --blue:          #3b82f6;
+      --surface:       #f1f5f9;
+      --card:          #ffffff;
+      --border:        #e2e8f0;
+      --text-primary:  #0f172a;
+      --text-secondary:#64748b;
+      --text-muted:    #94a3b8;
+      --green:         #22c55e;
+      --amber:         #f59e0b;
+      --teal:          #14b8a6;
+      --purple:        #8b5cf6;
+      --cyan:          #06b6d4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
+
+    /* ── Header ── */
+    .header { background: var(--navy); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .bridge-logo { color: var(--blue); font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .header-divider { width: 1px; height: 18px; background: #253553; }
+    .report-type { color: #94a3b8; font-size: 10px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; }
+    .header-date { color: #475569; font-size: 12px; }
+
+    /* ── Sub-header ── */
+    .sub-header { background: var(--navy-light); padding: 22px 40px 26px; border-bottom: 1px solid #1a2d47; display: flex; justify-content: space-between; align-items: flex-start; }
+    .sub-header-left { flex: 1; }
+    .merchant-name {
+      color: #ffffff; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px;
+      outline: none; cursor: text; display: inline-block; min-width: 80px;
+      border-bottom: 2px solid transparent; transition: border-color 0.15s;
+    }
+    .merchant-name:hover { border-bottom-color: #253553; }
+    .merchant-name:focus { border-bottom-color: var(--blue); }
+    .merchant-subtitle { color: #475569; font-size: 13px; }
+    .sub-header-actions { display: flex; gap: 8px; padding-top: 4px; }
+    .action-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: transparent; border: 1px solid #253553; border-radius: 6px;
+      color: #64748b; font-family: inherit; font-size: 11px; font-weight: 500;
+      padding: 6px 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .action-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .action-btn svg { flex-shrink: 0; }
+
+    /* ── Main ── */
+    .main { max-width: 1180px; margin: 0 auto; padding: 32px 40px 48px; }
+    .section { margin-bottom: 32px; }
+    .section-title { font-size: 10px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
+
+    /* ── Collapsible section header ── */
+    .collapsible-header {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      color: var(--text-secondary); font-size: 10px; font-weight: 600;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      background: none; border: none; padding: 0; font-family: inherit; user-select: none;
+      margin-bottom: 14px;
+    }
+    .collapsible-header:hover { color: var(--blue); }
+    .chevron { transition: transform 0.2s; display: flex; }
+
+    /* ── Inputs / Pricing grids ── */
+    .inputs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .input-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: border-color 0.15s; }
+    .input-card:focus-within { border-color: var(--blue); }
+    .input-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; }
+    .input-field { width: 100%; border: none; outline: none; font-family: inherit; font-size: 19px; font-weight: 600; color: var(--text-primary); background: transparent; }
+    .input-field:focus { color: var(--blue); }
+    .input-field.small { font-size: 16px; }
+    .input-unit { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+    .kpi-year { font-size: 10px; font-weight: 700; color: var(--blue); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+    .kpi-row { margin-bottom: 14px; }
+    .kpi-row-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 3px; }
+    .kpi-row-value { font-size: 24px; font-weight: 700; }
+    .kv-benefit { color: var(--text-primary); }
+    .kv-invest  { color: var(--amber); }
+    .kv-roi     { color: var(--green); }
+    .kpi-divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+    /* ── Pass stat row ── */
+    .pass-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+    .pass-stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+    .pass-stat-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .pass-stat-value { font-size: 28px; font-weight: 700; color: var(--text-primary); }
+    .pass-stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Charts ── */
+    .charts-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; }
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .chart-subtitle { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; }
+
+    /* ── Tables ── */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+    .breakdown-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .breakdown-table th { text-align: left; padding: 11px 18px; font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.9px; border-bottom: 1px solid var(--border); background: #fafbfc; }
+    .breakdown-table th:not(:first-child) { text-align: right; }
+    .breakdown-table td { padding: 11px 18px; border-bottom: 1px solid #f1f5f9; }
+    .breakdown-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+    .breakdown-table tr.cat-header td { font-size: 11px; font-weight: 700; color: var(--text-secondary); background: #f8fafc; letter-spacing: 0.5px; padding-top: 14px; }
+    .breakdown-table tr.subtotal td { font-weight: 600; border-top: 1px solid var(--border); border-bottom: 2px solid var(--border); background: #fafbfc; }
+    .breakdown-table tr.grand-total td { font-weight: 700; font-size: 14px; background: #f0fdf4; }
+    .breakdown-table tr.data-row:hover td { background: #f8fafc; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+    .row-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; margin-left: 16px; }
+
+    /* ── Info icon + tooltip ── */
+    .info-wrap { position: relative; display: inline-flex; align-items: center; margin-left: 6px; vertical-align: middle; cursor: default; }
+    .info-icon { width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0; color: #64748b; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; line-height: 1; font-style: normal; }
+    .info-tip {
+      display: none; position: absolute; left: 20px; top: -6px; z-index: 20;
+      background: #1e293b; color: #e2e8f0; font-size: 11px; line-height: 1.55;
+      padding: 9px 11px; border-radius: 7px; width: 270px; white-space: normal;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25); pointer-events: none;
+    }
+    .info-wrap:hover .info-tip { display: block; }
+
+    /* ── Assumptions ── */
+    .assumptions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    .asm-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 13px 15px; }
+    .asm-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+    .asm-value { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .asm-slider { width: 100%; height: 3px; appearance: none; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+    .asm-slider::-webkit-slider-thumb { appearance: none; width: 13px; height: 13px; background: var(--blue); border-radius: 50%; cursor: pointer; }
+    .asm-range { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; color: var(--text-muted); }
+
+    /* ── Footer ── */
+    .footer { background: var(--navy); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-logo { color: var(--blue); font-size: 16px; font-weight: 700; }
+    .footer-text { color: #3d5275; font-size: 12px; }
+
+    /* ── Print ── */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; }
+      .header { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sub-header { background: var(--navy-light) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sub-header-actions { display: none !important; }
+      .kpi-card, .pass-stat-card, .chart-card, .card { box-shadow: none; border: 1px solid #e2e8f0; break-inside: avoid; }
+      .main { padding: 20px; }
+      .section { margin-bottom: 20px; }
+      canvas { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header no-print-bg">
+  <div class="header-left">
+    <span class="bridge-logo">bridge</span>
+    <div class="header-divider"></div>
+    <span class="report-type">Business Case</span>
+  </div>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<!-- ── Sub-header ── -->
+<div class="sub-header">
+  <div class="sub-header-left">
+    <div class="merchant-name" id="merchant-name" contenteditable="true" spellcheck="false">NIKE</div>
+    <div class="merchant-subtitle">3-Year ROI Projection &nbsp;·&nbsp; Gift Card Wallet Intelligence</div>
+  </div>
+  <div class="sub-header-actions no-print">
+    <button class="action-btn" onclick="printReport()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <rect x="3" y="1" width="10" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="3" y="9" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M3 7h10M1 6h14v5a1 1 0 01-1 1H2a1 1 0 01-1-1V6z" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="12" cy="8.5" r="0.75" fill="currentColor"/>
+      </svg>
+      Print / PDF
+    </button>
+    <button class="action-btn" onclick="saveHTML()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1v9m0 0L5 7m3 3l3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M2 12v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      Save HTML
+    </button>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Merchant Inputs -->
+  <div class="section no-print">
+    <div class="section-title">Merchant Inputs</div>
+    <div class="inputs-grid">
+      <div class="input-card">
+        <div class="input-label">Cards Activated</div>
+        <input class="input-field" id="inp-cards" type="text" value="2,500,000">
+        <div class="input-unit">units / year</div>
+      </div>
+      <div class="input-card">
+        <div class="input-label">Balance Inquiries</div>
+        <input class="input-field" id="inp-inquiries" type="text" value="500,000">
+        <div class="input-unit">calls / year</div>
+      </div>
+      <div class="input-card">
+        <div class="input-label">Dollar Value Activated</div>
+        <input class="input-field" id="inp-value" type="text" value="125,000,000">
+        <div class="input-unit">$ total / year</div>
+      </div>
+      <div class="input-card">
+        <div class="input-label">Avg Basket Size</div>
+        <input class="input-field" id="inp-basket" type="text" value="60">
+        <div class="input-unit">$ per transaction</div>
+      </div>
+      <div class="input-card">
+        <div class="input-label">Annual Growth Rate</div>
+        <input class="input-field" id="inp-growth" type="text" value="5">
+        <div class="input-unit">% year-over-year</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bridge Pricing (collapsible) -->
+  <div class="section no-print">
+    <button class="collapsible-header" id="pricing-toggle" onclick="togglePricing()">
+      <span class="chevron" id="pricing-chevron">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Bridge Pricing
+    </button>
+    <div id="pricing-panel" style="display:none;">
+      <div class="inputs-grid">
+        <div class="input-card">
+          <div class="input-label">SaaS Fee — Year 1</div>
+          <input class="input-field small" id="price-saas-yr1" type="text" value="60,000">
+          <div class="input-unit">$ / year</div>
+        </div>
+        <div class="input-card">
+          <div class="input-label">SaaS Fee — Year 2</div>
+          <input class="input-field small" id="price-saas-yr2" type="text" value="72,000">
+          <div class="input-unit">$ / year</div>
+        </div>
+        <div class="input-card">
+          <div class="input-label">SaaS Fee — Year 3</div>
+          <input class="input-field small" id="price-saas-yr3" type="text" value="84,000">
+          <div class="input-unit">$ / year</div>
+        </div>
+        <div class="input-card">
+          <div class="input-label">Implementation Fee</div>
+          <input class="input-field small" id="price-impl" type="text" value="15,000">
+          <div class="input-unit">$ one-time (Year 1)</div>
+        </div>
+        <div class="input-card">
+          <div class="input-label">Push Notification Rate</div>
+          <input class="input-field small" id="price-notif" type="text" value="0.020">
+          <div class="input-unit">$ per notification</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wallet & Subscriber Growth -->
+  <div class="section">
+    <div class="section-title">Wallet &amp; Subscriber Growth</div>
+    <div class="pass-stat-grid" id="pass-stat-row"></div>
+    <div class="charts-grid" style="margin-bottom:16px;">
+      <div class="chart-card">
+        <div class="chart-title">Annual Passes Added by Channel</div>
+        <div class="chart-subtitle">New passes entering the wallet each year</div>
+        <canvas id="chart-pass-bar" height="200"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cumulative Passes &amp; Subscribers</div>
+        <div class="chart-subtitle">Running totals across the 3-year period</div>
+        <canvas id="chart-pass-line" height="200"></canvas>
+      </div>
+    </div>
+    <div class="card" style="overflow:hidden;">
+      <table class="breakdown-table" id="pass-table"></table>
+    </div>
+  </div>
+
+  <!-- 3-Year ROI Summary -->
+  <div class="section">
+    <div class="section-title">3-Year ROI Summary</div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </div>
+
+  <!-- ROI Charts -->
+  <div class="section">
+    <div class="section-title">ROI Visualisation</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Annual Benefit by Category</div>
+        <div class="chart-subtitle">Revenue contribution per year</div>
+        <canvas id="chart-bar" height="200"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cumulative Net ROI</div>
+        <div class="chart-subtitle">3-year rolling total</div>
+        <canvas id="chart-roi" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI Breakdown Table -->
+  <div class="section">
+    <div class="section-title">Detailed Breakdown</div>
+    <div class="card" style="overflow:hidden;">
+      <table class="breakdown-table" id="breakdown-table"></table>
+    </div>
+  </div>
+
+  <!-- Assumptions -->
+  <div class="section no-print">
+    <button class="collapsible-header" onclick="toggleAssumptions()">
+      <span class="chevron" id="toggle-arrow">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Model Assumptions
+    </button>
+    <div id="assumptions-panel" style="display:none;">
+      <div class="assumptions-grid" id="assumptions-grid"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <span class="footer-logo">bridge</span>
+  <span class="footer-text">bridgecard.app &nbsp;·&nbsp; Business case generated <span id="footer-date"></span></span>
+</footer>
+
+<script>
+// ── Assumption definitions (no grossMargin) ───────────────────────────────
+const ASSUMPTIONS = [
+  { id: 'walletAddRate',           label: 'Wallet Add Rate (Balance Inquiry)', unit: '%', default: 75,  min: 5,   max: 100, step: 1,   desc: '% of balance inquiries that result in a wallet add' },
+  { id: 'walletAddRateActivation', label: 'Wallet Add Rate (Card Activation)', unit: '%', default: 10,  min: 1,   max: 50,  step: 1,   desc: '% of activated cards whose holder adds directly to wallet' },
+  { id: 'shareRate',               label: 'Pass Share Multiplier',             unit: '%', default: 30,  min: 0,   max: 100, step: 5,   desc: 'For every 100 passes added, this many extra passes are generated through sharing' },
+  { id: 'passRetentionRate',       label: 'Pass Retention Rate',               unit: '%', default: 80,  min: 40,  max: 100, step: 5,   desc: '% of cumulative wallet passes not deleted year-over-year' },
+  { id: 'notifSubscriberRate',     label: 'Notification Opt-in Rate',          unit: '%', default: 70,  min: 10,  max: 100, step: 5,   desc: '% of pass holders with push notifications enabled' },
+  { id: 'notificationsPerPass',    label: 'Notifications / Subscriber / Year', unit: '',  default: 3,   min: 1,   max: 12,  step: 0.5, desc: 'Avg notifications sent per subscriber annually' },
+  { id: 'notifConvRate',           label: 'Notification Conversion Rate',      unit: '%', default: 3,   min: 0.5, max: 15,  step: 0.5, desc: '% of notification recipients that make a purchase' },
+  { id: 'redemptionAccelRate',     label: 'Redemption Acceleration Rate',      unit: '%', default: 10,  min: 1,   max: 30,  step: 1,   desc: '% of wallet card value that is accelerated vs. physical cards' },
+  { id: 'unredeemedRate',          label: 'Unredeemed Card Recovery Rate',     unit: '%', default: 2,   min: 0.5, max: 10,  step: 0.5, desc: '% of previously dormant cards now activated via wallet' },
+  { id: 'emailEnrollRate',         label: 'Loyalty / Email Enrollment Rate',   unit: '%', default: 3,   min: 0.5, max: 15,  step: 0.5, desc: '% of new pass holders who enroll in loyalty or newsletter' },
+  { id: 'appDownloadRate',         label: 'App Download Rate',                 unit: '%', default: 3,   min: 0.5, max: 15,  step: 0.5, desc: '% of new pass holders who download the merchant app' },
+  { id: 'costPerEmail',            label: 'Cost per Email / Loyalty Acq.',     unit: '$', default: 5,   min: 1,   max: 20,  step: 1,   desc: 'Industry avg cost to acquire an email or loyalty member' },
+  { id: 'costPerApp',              label: 'Cost per App Install',              unit: '$', default: 5,   min: 1,   max: 15,  step: 1,   desc: 'Industry avg CPI (iOS + Android blended)' },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+const state = {};
+ASSUMPTIONS.forEach(a => state[a.id] = a.default);
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function parseNum(id) { return parseFloat(document.getElementById(id).value.replace(/,/g, '')) || 0; }
+
+function fmtDollar(n) {
+  if (Math.abs(n) >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+  if (Math.abs(n) >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(0);
+}
+function fmtCount(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+// ── Core model ────────────────────────────────────────────────────────────
+function calculate() {
+  const cards0     = parseNum('inp-cards');
+  const inquiries0 = parseNum('inp-inquiries');
+  const value0     = parseNum('inp-value');
+  const basket     = parseNum('inp-basket');
+  const growth     = parseNum('inp-growth') / 100;
+
+  const walletAddInquiry  = state.walletAddRate           / 100;
+  const walletAddActivate = state.walletAddRateActivation / 100;
+  const shareRate         = state.shareRate               / 100;
+  const retention         = state.passRetentionRate       / 100;
+  const subscriberRate    = state.notifSubscriberRate     / 100;
+  const npp               = state.notificationsPerPass;
+  const convRate          = state.notifConvRate           / 100;
+  const accelRate         = state.redemptionAccelRate     / 100;
+  const unredRate         = state.unredeemedRate          / 100;
+  const emailRate         = state.emailEnrollRate         / 100;
+  const appRate           = state.appDownloadRate         / 100;
+  const emailCost         = state.costPerEmail;
+  const appCost           = state.costPerApp;
+
+  const avgLoad = cards0 > 0 ? value0 / cards0 : 50;
+
+  let prevPasses        = 0;  // all passes (for b1, b4, notifications)
+  let prevOrganicPasses = 0;  // inquiry + activation only (for b2, b3)
+  const data = [];
+
+  for (let yr = 1; yr <= 3; yr++) {
+    const mult        = Math.pow(1 + growth, yr - 1);
+    const cards       = cards0     * mult;
+    const inquiries   = inquiries0 * mult;
+    const dollarValue = value0     * mult;
+
+    // ─ Pass acquisition ─
+    const passesViaInquiry    = inquiries * walletAddInquiry;
+    const passesViaActivation = cards     * walletAddActivate;
+    const organicPassesAdded  = passesViaInquiry + passesViaActivation;
+    const passesViaSharing    = organicPassesAdded * shareRate;
+    const passesAddedNew      = organicPassesAdded + passesViaSharing;
+
+    // Cumulative — all passes (shared included)
+    const totalPasses = passesAddedNew + prevPasses * retention;
+    prevPasses = totalPasses;
+
+    // Cumulative — organic only (no sharing, no shared-pass retention carryover)
+    const cumulativeOrganicPasses = organicPassesAdded + prevOrganicPasses * retention;
+    prevOrganicPasses = cumulativeOrganicPasses;
+
+    // ─ Notification subscribers ─
+    const notifSubscribers = totalPasses * subscriberRate;
+    const notifications    = notifSubscribers * npp;
+
+    // ─ Bridge pricing (editable) ─
+    const saasFeeMap = { 1: parseNum('price-saas-yr1'), 2: parseNum('price-saas-yr2'), 3: parseNum('price-saas-yr3') };
+    const saasFee    = saasFeeMap[yr];
+    const notifRate  = parseNum('price-notif');
+    const notifFee   = notifications * notifRate;
+    const implFee    = yr === 1 ? parseNum('price-impl') : 0;
+    const totalInvestment = saasFee + notifFee + implFee;
+
+    // ─ Benefit 1: Notification-driven conversions (full revenue, no margin) ─
+    const purchases = notifications * convRate;
+    const b1        = purchases * basket;
+
+    // ─ Benefit 2: Redemption acceleration (organic cumulative only, no margin) ─
+    const b2 = cumulativeOrganicPasses * avgLoad * accelRate;
+
+    // ─ Benefit 3: Unredeemed card recovery (organic annual, no margin) ─
+    const b3 = organicPassesAdded * avgLoad * unredRate;
+
+    // ─ Benefit 4: Customer acquisition savings (all passes incl. shared) ─
+    const b4 = passesAddedNew * (emailRate * emailCost + appRate * appCost);
+
+    const totalBenefit = b1 + b2 + b3 + b4;
+    const netROI       = totalBenefit - totalInvestment;
+
+    data.push({
+      yr, cards, inquiries, dollarValue, avgLoad,
+      passesViaInquiry, passesViaActivation, passesViaSharing, passesAddedNew,
+      organicPassesAdded, cumulativeOrganicPasses,
+      totalPasses, notifSubscribers, notifications, purchases,
+      b1, b2, b3, b4,
+      totalBenefit, saasFee, notifFee, implFee, totalInvestment, netROI
+    });
+  }
+  return data;
+}
+
+// ── Chart instances ───────────────────────────────────────────────────────
+let barChart = null, roiChart = null, passBarChart = null, passLineChart = null;
+const C = { b1: '#3b82f6', b2: '#8b5cf6', b3: '#06b6d4', b4: '#22c55e', inquiry: '#3b82f6', activate: '#8b5cf6', share: '#14b8a6', passes: '#3b82f6', subs: '#22c55e' };
+const CHART_FONT = { family: 'Inter', size: 11 };
+const LEGEND_OPTS = { position: 'bottom', labels: { font: { family: 'Inter', size: 11 }, color: '#64748b', padding: 14, usePointStyle: true, pointStyleWidth: 8 } };
+
+// ── Renderers ─────────────────────────────────────────────────────────────
+function renderPassStatRow(data) {
+  const last = data[2];
+  const totalNotifs = data.reduce((s, d) => s + d.notifications, 0);
+  document.getElementById('pass-stat-row').innerHTML = `
+    <div class="pass-stat-card">
+      <div class="pass-stat-label">Cumulative Passes in Wallet (YR3)</div>
+      <div class="pass-stat-value">${fmtCount(last.totalPasses)}</div>
+      <div class="pass-stat-sub">${fmtCount(last.passesAddedNew)} new passes in Year 3</div>
+    </div>
+    <div class="pass-stat-card">
+      <div class="pass-stat-label">Notification Subscribers (YR3)</div>
+      <div class="pass-stat-value">${fmtCount(last.notifSubscribers)}</div>
+      <div class="pass-stat-sub">${state.notifSubscriberRate}% opt-in rate applied</div>
+    </div>
+    <div class="pass-stat-card">
+      <div class="pass-stat-label">Total Notifications Sent (3 Years)</div>
+      <div class="pass-stat-value">${fmtCount(totalNotifs)}</div>
+      <div class="pass-stat-sub">${fmtCount(data.reduce((s,d)=>s+d.purchases,0))} projected purchases</div>
+    </div>`;
+}
+
+function renderPassTable(data) {
+  const [y1, y2, y3] = data;
+  document.getElementById('pass-table').innerHTML = `
+    <thead><tr><th style="width:52%">Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr></thead>
+    <tbody>
+      <tr class="cat-header"><td colspan="4">Pass Additions (Annual)</td></tr>
+      <tr class="data-row"><td><span class="dot" style="background:${C.inquiry}"></span>Via balance inquiry</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.passesViaInquiry)}</td>`).join('')}</tr>
+      <tr class="data-row"><td><span class="dot" style="background:${C.activate}"></span>Via card activation</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.passesViaActivation)}</td>`).join('')}</tr>
+      <tr class="data-row"><td><span class="dot" style="background:${C.share}"></span>Via sharing (${state.shareRate}% multiplier)</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.passesViaSharing)}</td>`).join('')}</tr>
+      <tr class="subtotal"><td>Total new passes (annual)</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.passesAddedNew)}</td>`).join('')}</tr>
+      <tr class="data-row"><td><span style="width:16px;display:inline-block;"></span>Cumulative passes in wallet</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.totalPasses)}</td>`).join('')}</tr>
+      <tr><td colspan="4" style="height:6px;background:#f8fafc;"></td></tr>
+      <tr class="cat-header"><td colspan="4">Notification Reach</td></tr>
+      <tr class="data-row"><td><span class="dot" style="background:${C.subs}"></span>Notification subscribers</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.notifSubscribers)}</td>`).join('')}</tr>
+      <tr class="data-row"><td><span style="width:16px;display:inline-block;"></span>Notifications sent</td>${[y1,y2,y3].map(d=>`<td>${fmtCount(d.notifications)}</td>`).join('')}</tr>
+    </tbody>`;
+}
+
+function renderPassCharts(data) {
+  const labels = ['Year 1', 'Year 2', 'Year 3'];
+
+  const pbCtx = document.getElementById('chart-pass-bar').getContext('2d');
+  if (passBarChart) passBarChart.destroy();
+  passBarChart = new Chart(pbCtx, {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Balance Inquiry', data: data.map(d=>d.passesViaInquiry),    backgroundColor: C.inquiry  },
+      { label: 'Card Activation', data: data.map(d=>d.passesViaActivation), backgroundColor: C.activate },
+      { label: 'Sharing',         data: data.map(d=>d.passesViaSharing),    backgroundColor: C.share    },
+    ]},
+    options: { responsive: true, plugins: { legend: LEGEND_OPTS, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtCount(ctx.raw)}` } } },
+      scales: { x: { stacked: true, grid: { display: false }, ticks: { font: CHART_FONT, color: '#64748b' } }, y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { font: CHART_FONT, color: '#94a3b8', callback: v => fmtCount(v) } } } }
+  });
+
+  const plCtx = document.getElementById('chart-pass-line').getContext('2d');
+  if (passLineChart) passLineChart.destroy();
+  passLineChart = new Chart(plCtx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Cumulative Passes', data: data.map(d=>d.totalPasses), borderColor: C.passes, backgroundColor: 'rgba(59,130,246,0.07)', fill: true, tension: 0.4, pointBackgroundColor: C.passes, pointRadius: 5, borderWidth: 2 },
+      { label: 'Subscribers',       data: data.map(d=>d.notifSubscribers), borderColor: C.subs, backgroundColor: 'rgba(34,197,94,0.06)', fill: true, tension: 0.4, pointBackgroundColor: C.subs, pointRadius: 5, borderWidth: 2 },
+    ]},
+    options: { responsive: true, plugins: { legend: LEGEND_OPTS, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtCount(ctx.raw)}` } } },
+      scales: { x: { grid: { display: false }, ticks: { font: CHART_FONT, color: '#64748b' } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: CHART_FONT, color: '#94a3b8', callback: v => fmtCount(v) } } } }
+  });
+}
+
+function renderKPIs(data) {
+  document.getElementById('kpi-grid').innerHTML = data.map(d => `
+    <div class="kpi-card">
+      <div class="kpi-year">Year ${d.yr}</div>
+      <div class="kpi-row"><div class="kpi-row-label">Total Benefit</div><div class="kpi-row-value kv-benefit">${fmtDollar(d.totalBenefit)}</div></div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-row"><div class="kpi-row-label">Bridge Investment</div><div class="kpi-row-value kv-invest">${fmtDollar(d.totalInvestment)}</div></div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-row"><div class="kpi-row-label">Net ROI</div><div class="kpi-row-value kv-roi">${fmtDollar(d.netROI)}</div></div>
+    </div>`).join('');
+}
+
+function renderROICharts(data) {
+  const labels = ['Year 1', 'Year 2', 'Year 3'];
+
+  const barCtx = document.getElementById('chart-bar').getContext('2d');
+  if (barChart) barChart.destroy();
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Notification Conversions',    data: data.map(d=>d.b1), backgroundColor: C.b1 },
+      { label: 'Redemption Acceleration',      data: data.map(d=>d.b2), backgroundColor: C.b2 },
+      { label: 'Unredeemed Card Recovery',     data: data.map(d=>d.b3), backgroundColor: C.b3 },
+      { label: 'Customer Acquisition Savings', data: data.map(d=>d.b4), backgroundColor: C.b4 },
+    ]},
+    options: { responsive: true, plugins: { legend: LEGEND_OPTS, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtDollar(ctx.raw)}` } } },
+      scales: { x: { stacked: true, grid: { display: false }, ticks: { font: CHART_FONT, color: '#64748b' } }, y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { font: CHART_FONT, color: '#94a3b8', callback: v => fmtDollar(v) } } } }
+  });
+
+  let cum = 0;
+  const cumROI = data.map(d => { cum += d.netROI; return cum; });
+  const roiCtx = document.getElementById('chart-roi').getContext('2d');
+  if (roiChart) roiChart.destroy();
+  roiChart = new Chart(roiCtx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Cumulative Net ROI', data: cumROI, borderColor: C.b1, backgroundColor: 'rgba(59,130,246,0.07)', fill: true, tension: 0.4, pointBackgroundColor: C.b1, pointRadius: 5, borderWidth: 2 }] },
+    options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` Cumulative ROI: ${fmtDollar(ctx.raw)}` } } },
+      scales: { x: { grid: { display: false }, ticks: { font: CHART_FONT, color: '#64748b' } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: CHART_FONT, color: '#94a3b8', callback: v => fmtDollar(v) } } } }
+  });
+}
+
+function infoIcon(tip) {
+  return `<span class="info-wrap"><span class="info-icon">i</span><span class="info-tip">${tip}</span></span>`;
+}
+
+function renderBreakdownTable(data) {
+  const [y1, y2, y3] = data;
+
+  const tips = {
+    b1: 'Cumulative passes × notification opt-in rate × notifications per year × conversion rate × avg basket size',
+    b2: 'Cumulative organic passes (balance inquiry + card activation only, sharing excluded) × avg card load value × acceleration rate',
+    b3: 'Annual organic passes (balance inquiry + card activation) × avg card load value × unredeemed recovery rate',
+    b4: 'All new passes including shared × ((loyalty enrollment rate × cost per enrollment) + (app download rate × cost per install))',
+  };
+
+  const benefitRows = [
+    { label: 'Notification-Driven Conversions',    color: C.b1, values: [y1.b1, y2.b1, y3.b1], desc: 'Push notifications → incremental sales', tip: tips.b1 },
+    { label: 'Redemption Acceleration',             color: C.b2, values: [y1.b2, y2.b2, y3.b2], desc: 'Wallet cardholders spend faster — full card sales value accelerated', tip: tips.b2 },
+    { label: 'Unredeemed Card Recovery',            color: C.b3, values: [y1.b3, y2.b3, y3.b3], desc: 'Dormant / forgotten card sales value now captured via wallet', tip: tips.b3 },
+    { label: 'Customer Acquisition Savings',        color: C.b4, values: [y1.b4, y2.b4, y3.b4], desc: 'Loyalty enrolment + app downloads vs. industry CAC', tip: tips.b4 },
+  ];
+  const investRows = [
+    { label: 'Bridge SaaS Platform Fee',            values: [y1.saasFee,  y2.saasFee,  y3.saasFee]  },
+    { label: 'Push Notification Fees',              values: [y1.notifFee, y2.notifFee, y3.notifFee] },
+    { label: 'One-Time Implementation Fee',          values: [y1.implFee,  y2.implFee,  y3.implFee]  },
+  ];
+
+  const bRow = (r) => `
+    <tr class="data-row">
+      <td>
+        <div style="display:flex;align-items:center;">
+          <span class="dot" style="background:${r.color}"></span>
+          ${r.label}${infoIcon(r.tip)}
+        </div>
+        ${r.desc ? `<div class="row-meta">${r.desc}</div>` : ''}
+      </td>
+      ${r.values.map(v=>`<td>${fmtDollar(v)}</td>`).join('')}
+    </tr>`;
+
+  const iRow = (r) => `
+    <tr class="data-row">
+      <td><span style="width:16px;display:inline-block;"></span>${r.label}</td>
+      ${r.values.map(v=>`<td>${fmtDollar(v)}</td>`).join('')}
+    </tr>`;
+
+  document.getElementById('breakdown-table').innerHTML = `
+    <thead><tr><th style="width:52%">Category</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr></thead>
+    <tbody>
+      <tr class="cat-header"><td colspan="4">Benefits</td></tr>
+      ${benefitRows.map(bRow).join('')}
+      <tr class="subtotal"><td>Total Benefit</td>${[y1,y2,y3].map(d=>`<td>${fmtDollar(d.totalBenefit)}</td>`).join('')}</tr>
+      <tr><td colspan="4" style="height:6px;background:#f8fafc;"></td></tr>
+      <tr class="cat-header"><td colspan="4">Investment</td></tr>
+      ${investRows.map(iRow).join('')}
+      <tr class="subtotal"><td>Total Investment</td>${[y1,y2,y3].map(d=>`<td>${fmtDollar(d.totalInvestment)}</td>`).join('')}</tr>
+      <tr><td colspan="4" style="height:6px;background:#f8fafc;"></td></tr>
+      <tr class="grand-total"><td>Net ROI</td>${[y1,y2,y3].map(d=>`<td style="color:var(--green)">${fmtDollar(d.netROI)}</td>`).join('')}</tr>
+    </tbody>`;
+}
+
+function renderAssumptions() {
+  document.getElementById('assumptions-grid').innerHTML = ASSUMPTIONS.map(a => {
+    const display  = a.unit === '$' ? `$${a.default}` : `${a.default}${a.unit}`;
+    const minLabel = a.unit === '$' ? `$${a.min}`     : `${a.min}${a.unit}`;
+    const maxLabel = a.unit === '$' ? `$${a.max}`     : `${a.max}${a.unit}`;
+    return `
+      <div class="asm-item">
+        <div class="asm-label">${a.label}</div>
+        <div class="asm-value" id="asm-disp-${a.id}">${display}</div>
+        <input class="asm-slider" type="range" id="asm-${a.id}" min="${a.min}" max="${a.max}" step="${a.step}" value="${a.default}" oninput="onAsmChange('${a.id}','${a.unit}',this.value)">
+        <div class="asm-range"><span>${minLabel}</span><span>${maxLabel}</span></div>
+      </div>`;
+  }).join('');
+}
+
+function onAsmChange(id, unit, val) {
+  state[id] = parseFloat(val);
+  document.getElementById(`asm-disp-${id}`).textContent = unit === '$' ? `$${val}` : `${val}${unit}`;
+  refresh();
+}
+
+// ── UI toggles ────────────────────────────────────────────────────────────
+function toggleAssumptions() {
+  const panel = document.getElementById('assumptions-panel');
+  const arrow = document.getElementById('toggle-arrow');
+  const open  = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+function togglePricing() {
+  const panel = document.getElementById('pricing-panel');
+  const arrow = document.getElementById('pricing-chevron');
+  const open  = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+// ── Print ─────────────────────────────────────────────────────────────────
+function printReport() { window.print(); }
+
+// ── Save HTML ─────────────────────────────────────────────────────────────
+async function saveHTML() { try {
+  const merchantName = document.getElementById('merchant-name').textContent.trim() || 'Merchant';
+  const inputs = {};
+  ['inp-cards','inp-inquiries','inp-value','inp-basket','inp-growth',
+   'price-saas-yr1','price-saas-yr2','price-saas-yr3','price-impl','price-notif'].forEach(id => {
+    inputs[id] = document.getElementById(id).value;
+  });
+  const saved = { merchantName, assumptionState: { ...state }, inputs };
+
+  // Fetch raw HTML text of this file — avoids outerHTML serialisation issues where Chrome
+  // truncates script content that contains patterns like <script id=...>
+  let html = await (await fetch(window.location.href)).text();
+
+  // Inline Chart.js if the CDN <script> tag is still present (skipped on re-saves)
+  const cdnRe = new RegExp('<script[^>]+src="[^"]*chart[^"]*"[^>]*><' + '/script>');
+  if (cdnRe.test(html)) {
+    try {
+      let chartJs = await (await fetch('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js')).text();
+      chartJs = chartJs.replace(/<\/script/gi, '<\\/script');
+      html = html.replace(cdnRe, () => '<script>' + chartJs + '<' + '/script>');
+    } catch (e) { /* CDN unavailable — CDN tag remains as fallback */ }
+  }
+
+  // Remove any previously injected state block
+  const stateRe = new RegExp('<script id="__saved_state__">[\\s\\S]*?<' + '/script>\\n?');
+  html = html.replace(stateRe, '');
+
+  // Inject fresh state before </head>
+  const stateJSON = JSON.stringify(saved).replace(/<\/script/gi, '<\\/script');
+  const stateBlock = '<script id="__saved_state__">window.__SAVED_STATE__ = ' + stateJSON + ';<' + '/script>\n';
+  html = html.replace('</head>', () => stateBlock + '</head>');
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = merchantName.toLowerCase().replace(/\s+/g, '-') + '-business-case.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  } catch(err) { alert('Save failed: ' + err); }
+}
+
+// ── Restore saved state ───────────────────────────────────────────────────
+function restoreSavedState() {
+  const saved = window.__SAVED_STATE__;
+  if (!saved) return;
+  // Merchant name
+  if (saved.merchantName) {
+    document.getElementById('merchant-name').textContent = saved.merchantName;
+    document.title = `Bridge — Business Case | ${saved.merchantName}`;
+  }
+  // Input fields
+  if (saved.inputs) {
+    Object.entries(saved.inputs).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+  }
+  // Assumption state + sliders
+  if (saved.assumptionState) {
+    Object.entries(saved.assumptionState).forEach(([k, v]) => {
+      if (state.hasOwnProperty(k)) state[k] = v;
+    });
+    // Sync slider positions + displayed values after renderAssumptions runs
+    ASSUMPTIONS.forEach(a => {
+      const slider = document.getElementById(`asm-${a.id}`);
+      const disp   = document.getElementById(`asm-disp-${a.id}`);
+      if (slider) slider.value = state[a.id];
+      if (disp) disp.textContent = a.unit === '$' ? `$${state[a.id]}` : `${state[a.id]}${a.unit}`;
+    });
+  }
+}
+
+// ── Refresh ───────────────────────────────────────────────────────────────
+function refresh() {
+  const data = calculate();
+  renderPassStatRow(data);
+  renderPassCharts(data);
+  renderPassTable(data);
+  renderKPIs(data);
+  renderROICharts(data);
+  renderBreakdownTable(data);
+}
+
+// ── Input listeners ───────────────────────────────────────────────────────
+['inp-cards','inp-inquiries','inp-value','inp-basket','inp-growth',
+ 'price-saas-yr1','price-saas-yr2','price-saas-yr3','price-impl','price-notif'].forEach(id => {
+  document.getElementById(id).addEventListener('change', refresh);
+});
+
+document.getElementById('merchant-name').addEventListener('input', function () {
+  document.title = `Bridge — Business Case | ${this.textContent.trim() || 'Merchant'}`;
+});
+
+// ── Dates ─────────────────────────────────────────────────────────────────
+const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+document.getElementById('header-date').textContent = dateStr;
+document.getElementById('footer-date').textContent  = dateStr;
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+renderAssumptions();
+restoreSavedState();   // apply saved state if file was downloaded & reopened
+refresh();
+</script>
+</body>
+</html>
